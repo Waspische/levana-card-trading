@@ -283,8 +283,8 @@ export default {
     factions: ['martian', 'guardian', 'terran', 'council'],
     luckyNumbers: [1, 2, 3, 4, 5, 6, 7, 8, 9],
     discordRules: [
-      v => !!v || 'Discord is required'
-      // v => /^.{3,32}#[0-9]{4}$/.test(v) || 'Discord name is invalid' // TODO to add again
+      v => !!v || 'Discord is required',
+      v => /^.{3,32}#[0-9]{4}$/.test(v) || 'Discord name is invalid' // TODO to add again
     ],
     addressRules: [
       v => !!v || 'Address is required'
