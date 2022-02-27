@@ -10,7 +10,7 @@
       :absolute="!fixed"
       app
     >
-      <span>Made by <strong>Wasp#1975</strong> &copy; {{ new Date().getFullYear() }}</span>
+      <span>Made by <strong>Wasp#1975</strong> - <a href="https://github.com/Waspische/levana-card-trading">Source</a> - &copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
   </v-app>
 </template>

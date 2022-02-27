@@ -10,6 +10,9 @@
         </router-link>
       </v-toolbar-title>
       <v-spacer />
+      <v-toolbar-title>
+        User count: {{ userCount }}
+      </v-toolbar-title>
     </v-app-bar>
   </v-container>
 </template>
@@ -19,8 +22,12 @@ export default {
   name: 'LvHeader',
   data () {
     return {
-      sidebar: false
+      userCount: 0
     }
+  },
+  async mounted () {
+    const response = await this.$axios.get('/levana-users')
+    this.userCount = response.data.meta.pagination.total
   }
 }
 </script>

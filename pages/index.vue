@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container class="pt-12 pb-0 pt-lg-15 text-center px-0">
+    <v-container class="pb-0 pt-lg-15 text-center px-0">
       <v-row justify="center">
         <v-col cols="12" md="12">
           <h1 class="text-h4 text-sm-h4 text-md-h3 text-lg-h2">
@@ -27,34 +27,29 @@
                 User information
               </div>
               <div class="text-center body-1 ma-2">
-                They are needed to identify who has which card
+                Needed to identify who has which card
               </div>
             </v-col>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="12">
               <v-text-field
                 v-model="userForm.discordUsername"
                 :rules="discordRules"
                 label="Discord username"
+                placeholder="Wasp#1975"
                 required
-              />
+              >
+                <template slot="append-outer">
+                  <v-btn
+                    :disabled="!userForm.valid"
+                    color="success"
+                    class="mr-4"
+                    type="submit"
+                  >
+                    Explore
+                  </v-btn>
+                </template>
+              </v-text-field>
             </v-col>
-
-            <v-col cols="12" md="6">
-              <v-text-field
-                v-model="userForm.terraAddress"
-                :rules="addressRules"
-                label="Terra Wallet Address"
-                required
-              />
-            </v-col>
-            <v-btn
-              :disabled="!userForm.valid"
-              color="success"
-              class="mr-4"
-              type="submit"
-            >
-              Explore
-            </v-btn>
           </v-row>
         </v-form>
       </v-sheet>
@@ -69,13 +64,46 @@
             </div>
           </v-col>
           <v-col cols="12" md="6">
-            <v-list subheader two-line flat>
-              <v-subheader v-if="levanaUser.ownedCards.length == 0" class="headline">
-                You have 0 Cards, add some
+            <v-list subheader>
+              <v-subheader class="headline">
+                Cards you trade
               </v-subheader>
-              <v-subheader v-else class="headline">
-                Cards you own
-              </v-subheader>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>
+                    <v-form
+                      ref="ownedCardForm"
+                      v-model="ownedCardForm.valid"
+                    >
+                      <v-row>
+                        <v-col cols="12" md="5">
+                          <v-select
+                            v-model="ownedCardForm.faction"
+                            :items="factions"
+                            label="Faction"
+                          />
+                        </v-col>
+                        <v-col cols="12" md="4">
+                          <v-select
+                            v-model="ownedCardForm.luckyNumber"
+                            :items="luckyNumbers"
+                            label="Lucky number"
+                          />
+                        </v-col>
+                        <v-btn
+                          color="success"
+                          class="mt-6"
+                          @click="addOwnedCard"
+                        >
+                          Add
+                        </v-btn>
+                      </v-row>
+                    </v-form>
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+            <v-list>
               <v-list-item-group>
                 <v-list-item v-for="(ownedCard, i) in levanaUser.ownedCards" :key="i">
                   <v-list-item-content>
@@ -95,54 +123,48 @@
                 </v-list-item>
               </v-list-item-group>
             </v-list>
+          </v-col>
+          <v-col cols="12" md="6">
             <v-list subheader>
               <v-subheader class="headline">
-                Add Cards
+                Cards you want
               </v-subheader>
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>
                     <v-form
-                      ref="ownedCardForm"
-                      v-model="ownedCardForm.valid"
+                      ref="searchedCardForm"
+                      v-model="searchedCardForm.valid"
                     >
                       <v-row>
-                        <v-col cols="12" md="6">
+                        <v-col cols="12" md="5">
                           <v-select
-                            v-model="ownedCardForm.faction"
+                            v-model="searchedCardForm.faction"
                             :items="factions"
                             label="Faction"
                           />
                         </v-col>
-                        <v-col cols="12" md="6">
+                        <v-col cols="12" md="4">
                           <v-select
-                            v-model="ownedCardForm.luckyNumber"
+                            v-model="searchedCardForm.luckyNumber"
                             :items="luckyNumbers"
                             label="Lucky number"
                           />
                         </v-col>
+                        <v-btn
+                          color="success"
+                          class="mt-6"
+                          @click="addSearchedCard"
+                        >
+                          Add
+                        </v-btn>
                       </v-row>
-                      <v-btn
-                        color="success"
-                        class="mr-4"
-                        @click="addOwnedCard"
-                      >
-                        Add
-                      </v-btn>
                     </v-form>
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-list subheader two-line flat>
-              <v-subheader v-if="levanaUser.searchedCards.length == 0" class="headline">
-                Add some cards to search
-              </v-subheader>
-              <v-subheader v-else class="headline">
-                Cards you want
-              </v-subheader>
+            <v-list flat>
               <v-list-item-group>
                 <v-list-item v-for="(searchedCard, i) in levanaUser.searchedCards" :key="i">
                   <v-list-item-content>
@@ -162,45 +184,6 @@
                 </v-list-item>
               </v-list-item-group>
             </v-list>
-            <v-list subheader>
-              <v-subheader class="headline">
-                Add Cards
-              </v-subheader>
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title>
-                    <v-form
-                      ref="searchedCardForm"
-                      v-model="searchedCardForm.valid"
-                    >
-                      <v-row>
-                        <v-col cols="12" md="6">
-                          <v-select
-                            v-model="searchedCardForm.faction"
-                            :items="factions"
-                            label="Faction"
-                          />
-                        </v-col>
-                        <v-col cols="12" md="6">
-                          <v-select
-                            v-model="searchedCardForm.luckyNumber"
-                            :items="luckyNumbers"
-                            label="Lucky number"
-                          />
-                        </v-col>
-                      </v-row>
-                      <v-btn
-                        color="success"
-                        class="mr-4"
-                        @click="addSearchedCard"
-                      >
-                        Add
-                      </v-btn>
-                    </v-form>
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
           </v-col>
         </v-row>
       </v-sheet>
@@ -212,9 +195,9 @@
         class="py-6 px-md-12 px-4"
       >
         <v-btn
-          @click="getTrades"
           color="info"
           class="mr-4"
+          @click="getTrades"
         >
           Refresh
         </v-btn>
@@ -248,14 +231,73 @@
     </v-container>
 
     <v-container fluid class="pt-4">
+      <v-sheet
+        v-if="levanaUser"
+        class="py-6 px-md-12 px-4"
+      >
+        <v-row>
+          <v-col cols="12" md="12">
+            <div class="text-center text-h7 text-sm-h6 text-md-h5 text-lg-h4">
+              Search card
+            </div>
+          </v-col>
+          <v-col cols="12" md="12">
+            <v-form
+              ref="searchForm"
+              v-model="searchForm.valid"
+            >
+              <v-row>
+                <v-col cols="12" sm="6" md="6">
+                  <v-select
+                    v-model="searchForm.faction"
+                    :items="factions"
+                    label="Faction"
+                    required
+                  />
+                </v-col>
+                <v-col cols="12" sm="6" md="6">
+                  <v-select
+                    v-model="searchForm.luckyNumber"
+                    :items="luckyNumbers"
+                    label="Lucky number"
+                    required
+                  />
+                </v-col>
+              </v-row>
+              <v-btn
+                color="success"
+                class="my-4"
+                @click="search"
+              >
+                Search
+              </v-btn>
+              <v-row>
+                <v-list-item v-for="(user, i) in searchResults" :key="i">
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      <strong>{{ user }}</strong>
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-row>
+            </v-form>
+          </v-col>
+        </v-row>
+      </v-sheet>
+    </v-container>
+
+    <v-container fluid class="pt-4">
       <v-row class="my-4">
-        <v-col cols="8" class="mx-auto">
+        <v-col cols="10" class="mx-auto">
           <div class="text-h5">
             Do you appreciate the content here ?
           </div>
           <div class="text-subtitle-1">
             Support me on Terra
             <span class="primary--text font-weight-bold"> terra1syt83hpsk9sefxypccvfa8x344z7uc2zfuw5wy</span>
+          </div>
+          <div class="text-subtitle-1">
+            PS: I'm looking for a Guardian 6
           </div>
         </v-col>
       </v-row>
@@ -280,8 +322,12 @@ export default {
       luckyNumber: null,
       faction: null
     },
+    searchForm: {
+      luckyNumber: null,
+      faction: null
+    },
     factions: ['martian', 'guardian', 'terran', 'council'],
-    luckyNumbers: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    luckyNumbers: [2, 4, 6, 8, 10],
     discordRules: [
       v => !!v || 'Discord is required',
       v => /^.{3,32}#[0-9]{4}$/.test(v) || 'Discord name is invalid' // TODO to add again
@@ -290,7 +336,8 @@ export default {
       v => !!v || 'Address is required'
     ],
     levanaUser: null,
-    trades: null
+    trades: null,
+    searchResults: null
   }),
   methods: {
     async connect () {
@@ -299,8 +346,7 @@ export default {
       try {
         let responseData
         let res = await this.$axios.$get('/levana-users?populate=%2A&' +
-          `filters[discordUsername][$eq]=${this.userForm.discordUsername}&` +
-          `filters[terraWalletAddress][$eq]=${this.userForm.terraAddress}`)
+          `filters[discordUsername][$eq]=${this.userForm.discordUsername.replace('#', '%23')}`)
 
         if (res.data.length === 0) { // user does not exists so create it
           console.log('user does not exist')
@@ -312,6 +358,15 @@ export default {
           }
           res = await this.$axios.$post('/levana-users', payload)
           responseData = res.data
+
+          this.levanaUser = {
+            id: responseData.id,
+            discordUsername: responseData.attributes.discordUsername,
+            terraWalletAddress: responseData.attributes.terraWalletAddress,
+            ownedCards: [],
+            searchedCards: []
+          }
+          this.trades = []
         } else {
           console.log('user already exist')
           responseData = res.data[0]
@@ -335,12 +390,22 @@ export default {
               }
             })
           }
-        }
 
-        this.getTrades()
+          this.getTrades()
+        }
       } catch (error) {
         console.log(JSON.stringify(error))
       }
+    },
+    async search () {
+      this.$refs.searchForm.validate()
+      console.log('search')
+
+      const result = await this.$axios.get('/levana-users?populate=%2A&pagination[pageSize]=100&pagination[page]=1&' +
+          `filters[ownedCards][luckyNumber][$eq]=${this.searchForm.luckyNumber}&` +
+          `filters[ownedCards][faction][$eq]=${this.searchForm.faction}`)
+      console.log(result)
+      this.searchResults = result.data.data.map(u => u.attributes.discordUsername)
     },
     async removeOwnedCard (index) {
       console.log(`You deleted owned ${JSON.stringify(this.levanaUser.ownedCards[index])}`)
